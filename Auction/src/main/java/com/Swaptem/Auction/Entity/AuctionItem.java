@@ -18,4 +18,7 @@ public class AuctionItem {
     private int itemId;
     @ManyToOne
     private Auction auction;
+
+
+
 }

@@ -1,10 +1,7 @@
 package com.Swaptem.Auction.Entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +16,7 @@ import java.util.List;
 @Setter
 public class Auction {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int auctionId;
     @OneToOne
     private AuctionParticipant owner;
@@ -30,6 +28,13 @@ public class Auction {
     private int currentOffer;
     @OneToOne
     private AuctionParticipant currentOfferParticipant;
+    private boolean active;
 
+
+    public Auction(AuctionParticipant ownerInput, List<AuctionItem> ownerItemsInput, int minimalOfferInput){
+        this.owner = ownerInput;
+        this.ownerItems = ownerItemsInput;
+        this.minimalOffer = minimalOfferInput;
+    }
 
 }
