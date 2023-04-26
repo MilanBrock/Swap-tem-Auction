@@ -1,6 +1,7 @@
 package com.Swaptem.Auction.Controller;
 
 import com.Swaptem.Auction.DTO.AuctionDTO;
+import com.Swaptem.Auction.DTO.AuctionOfferDTO;
 import com.Swaptem.Auction.DTO.AuctionStartDTO;
 import com.Swaptem.Auction.Entity.Auction;
 import com.Swaptem.Auction.Service.AuctionService;
@@ -36,11 +37,14 @@ public class AuctionController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<AuctionStartDTO>> GetAllActiveAuction(@PathVariable int auctionId){
-        List<AuctionStartDTO> auctionDTOs = new ArrayList<>();
-
-        return ResponseEntity.ok(auctionDTOs);
+    public ResponseEntity<List<AuctionDTO>> GetAllActiveAuction(){
+        List<AuctionDTO> auctionDTOs = auctionService.GetAllAuction();
+        if (auctionDTOs.size() > 0 ){
+            return ResponseEntity.ok(auctionDTOs);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
     }
+
 
     @GetMapping("/{auctionId}")
     public ResponseEntity<AuctionDTO> GetActiveAuction(@PathVariable int auctionId){
@@ -53,7 +57,7 @@ public class AuctionController {
 
     @GetMapping("/inactive/{auctionId}")
     public ResponseEntity<AuctionDTO> GetInactiveAuction(@PathVariable int auctionId){
-        AuctionDTO auctionDTO = auctionService.GetAuction(auctionId, true);
+        AuctionDTO auctionDTO = auctionService.GetAuction(auctionId, false);
         if(auctionDTO != null){
             return ResponseEntity.ok(auctionDTO);
         }
@@ -62,30 +66,35 @@ public class AuctionController {
 
     @PutMapping("/join/{auctionId}/{userId}")
     public ResponseEntity<String> JoinAuction(@PathVariable int auctionId, @PathVariable int userId){
-        auctionService.AddParticipant(auctionId,userId);
-        return new ResponseEntity<>("Auction joined", HttpStatus.CREATED);
+        System.out.println("HELPMEEEEEEEEEEEEE");
+        if(auctionService.AddParticipant(auctionId,userId)){
+            return new ResponseEntity<>("Auction joined", HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>("Unable to join auction", HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @PutMapping("/{auctionId}/{offerAmount}")
-    public ResponseEntity<String> UpdateOffer(@PathVariable int auctionId, @PathVariable int offerAmount){
-        return new ResponseEntity<>("Offer updated", HttpStatus.CREATED);
+    @PostMapping("/offer")
+    public ResponseEntity<String> UpdateOffer(@RequestBody AuctionOfferDTO auctionOffer){
+        if(auctionService.UpdateOffer(auctionOffer.getAuctionId(),auctionOffer.participantId,auctionOffer.getOfferAmount())){
+            return new ResponseEntity<>("Offer updated", HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>("Offer not updated", HttpStatus.NOT_ACCEPTABLE);
     }
 
     @PutMapping("/leave/{auctionId}/{userId}")
     public ResponseEntity<String> LeaveAuction(@PathVariable int auctionId, @PathVariable int userId){
-        auctionService.RemoveParticipant(auctionId,userId);
-        return new ResponseEntity<>("Left auction", HttpStatus.CREATED);
+        if(auctionService.RemoveParticipant(auctionId,userId)){
+            return new ResponseEntity<>("Left auction", HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>("Could not leave auction", HttpStatus.NOT_ACCEPTABLE);
     }
 
 
     @PutMapping("/stop/{auctionId}/{userId}")
     public ResponseEntity<String> StopAuction(@PathVariable int auctionId, @PathVariable int userId){
-
-        return new ResponseEntity<>("Left auction", HttpStatus.CREATED);
+        if(auctionService.StopAuction(auctionId,userId)){
+            return new ResponseEntity<>("Stopped auction", HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>("Unable to stop auction", HttpStatus.NOT_ACCEPTABLE);
     }
-
-
-
-
-
 }
