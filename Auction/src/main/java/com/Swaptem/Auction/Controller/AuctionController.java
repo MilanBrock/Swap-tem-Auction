@@ -3,7 +3,6 @@ package com.Swaptem.Auction.Controller;
 import com.Swaptem.Auction.DTO.AuctionDTO;
 import com.Swaptem.Auction.DTO.AuctionOfferDTO;
 import com.Swaptem.Auction.DTO.AuctionStartDTO;
-import com.Swaptem.Auction.Entity.Auction;
 import com.Swaptem.Auction.Service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -97,4 +96,5 @@ public class AuctionController {
         }
         return new ResponseEntity<>("Unable to stop auction", HttpStatus.NOT_ACCEPTABLE);
     }
+
 }

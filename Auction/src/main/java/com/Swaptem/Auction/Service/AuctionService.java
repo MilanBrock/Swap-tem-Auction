@@ -18,10 +18,10 @@ public class AuctionService {
 
     final AuctionRepositoryCustom auctionRepository;
     final AuctionParticipantRepositoryCustom participantRepository;
-    final AuctionItemRepository itemRepository;
+    final AuctionItemRepositoryCustom itemRepository;
 
     @Autowired
-    public AuctionService(AuctionRepositoryCustom auctionRepository, AuctionParticipantRepositoryCustom participantRepository, AuctionItemRepository itemRepository){
+    public AuctionService(AuctionRepositoryCustom auctionRepository, AuctionParticipantRepositoryCustom participantRepository, AuctionItemRepositoryCustom itemRepository){
         this.auctionRepository = auctionRepository;
         this.participantRepository = participantRepository;
         this.itemRepository = itemRepository;
@@ -65,6 +65,14 @@ public class AuctionService {
 
     public List<AuctionDTO> GetAllAuction(){
         List<Auction> auctions = auctionRepository.findAllByActive(true).orElse(null);
+
+        for (int i = 0; i < auctions.size(); i++){
+            List<AuctionItem> ownerItems = itemRepository.findAllByAuction_AuctionId(auctions.get(i).getAuctionId()).orElse(null);
+            List<AuctionParticipant> participants = participantRepository.findAuctionParticipantByAuction_AuctionId(auctions.get(i).getAuctionId()).orElse(null);
+            auctions.get(i).setOwnerItems(ownerItems);
+            auctions.get(i).setParticipants(participants);
+        }
+
         List<AuctionDTO> auctionDTOs = new ArrayList<>();
 
         if(auctions != null){
