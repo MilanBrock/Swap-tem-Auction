@@ -2,6 +2,7 @@ package com.Swaptem.Auction.Service;
 
 import com.Swaptem.Auction.DAL.*;
 import com.Swaptem.Auction.DTO.AuctionDTO;
+import com.Swaptem.Auction.DTO.AuctionOfferDTO;
 import com.Swaptem.Auction.DTO.AuctionStartDTO;
 import com.Swaptem.Auction.Entity.Auction;
 import com.Swaptem.Auction.Entity.AuctionItem;
@@ -58,9 +59,6 @@ public class AuctionService {
         }
         return succes;
     }
-
-
-
 
 
     public List<AuctionDTO> GetAllAuction(){
@@ -146,6 +144,16 @@ public class AuctionService {
         return false;
     }
 
+    public AuctionOfferDTO GetOffer(int auctionIdInput){
+        AuctionOfferDTO auctionOfferDTO = null;
+        Auction auction = auctionRepository.findAuctionByAuctionIdAndActive(auctionIdInput, true).orElse(null);
+        if(auction != null){
+             auctionOfferDTO = new AuctionOfferDTO(auctionIdInput,auction.getCurrentOfferParticipant().getParticipantId(),auction.getCurrentOffer());
+        }
+
+        return auctionOfferDTO;
+    }
+
 
     public boolean StopAuction(int auctionIdInput, int ownerIdInput){
         Auction auction = auctionRepository.findAuctionByAuctionIdAndOwner_ParticipantIdAndActive(auctionIdInput,ownerIdInput, true).orElse(null);
@@ -177,7 +185,7 @@ public class AuctionService {
         if(auctionInput.getCurrentOfferParticipant() != null){
             currentOfferParticipant = auctionInput.getCurrentOfferParticipant().getParticipantId();
         }
-        auctionDTO = new AuctionDTO(auctionInput.getOwner().getParticipantId(),ownerItems,auctionInput.getMinimalOffer(),participants, currentOfferParticipant, auctionInput.getCurrentOffer());
+        auctionDTO = new AuctionDTO(auctionInput.getAuctionId(),auctionInput.getOwner().getParticipantId(),ownerItems,auctionInput.getMinimalOffer(),participants, currentOfferParticipant, auctionInput.getCurrentOffer());
 
         return auctionDTO;
     }

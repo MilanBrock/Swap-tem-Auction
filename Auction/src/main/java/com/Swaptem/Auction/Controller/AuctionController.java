@@ -3,10 +3,13 @@ package com.Swaptem.Auction.Controller;
 import com.Swaptem.Auction.DTO.AuctionDTO;
 import com.Swaptem.Auction.DTO.AuctionOfferDTO;
 import com.Swaptem.Auction.DTO.AuctionStartDTO;
+import com.Swaptem.Auction.DTO.MessageDTO;
 import com.Swaptem.Auction.Service.AuctionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,10 +21,12 @@ import java.util.List;
 public class AuctionController {
 
     private final AuctionService auctionService;
+    private final SimpMessagingTemplate template;
 
     @Autowired
-    public AuctionController(AuctionService auctionService){
+    public AuctionController(AuctionService auctionService, SimpMessagingTemplate template){
         this.auctionService = auctionService;
+        this.template = template;
     }
 
 
@@ -65,7 +70,6 @@ public class AuctionController {
 
     @PutMapping("/join/{auctionId}/{userId}")
     public ResponseEntity<String> JoinAuction(@PathVariable int auctionId, @PathVariable int userId){
-        System.out.println("HELPMEEEEEEEEEEEEE");
         if(auctionService.AddParticipant(auctionId,userId)){
             return new ResponseEntity<>("Auction joined", HttpStatus.CREATED);
         }
@@ -73,11 +77,18 @@ public class AuctionController {
     }
 
     @PostMapping("/offer")
-    public ResponseEntity<String> UpdateOffer(@RequestBody AuctionOfferDTO auctionOffer){
-        if(auctionService.UpdateOffer(auctionOffer.getAuctionId(),auctionOffer.participantId,auctionOffer.getOfferAmount())){
+    public ResponseEntity<String> UpdateOffer(@RequestBody AuctionOfferDTO auctionOfferInput){
+        System.out.println("catch");
+        if(auctionService.UpdateOffer(auctionOfferInput.getAuctionId(),auctionOfferInput.participantId,auctionOfferInput.getOfferAmount())){
+            AuctionOfferDTO auctionOfferDTO = auctionService.GetOffer(auctionOfferInput.getAuctionId());
+            Integer message = (Integer)auctionOfferDTO.offerAmount;
+            MessageDTO messageDTO = new MessageDTO();
+            messageDTO.setMessage(message.toString());
+            template.convertAndSend("/topic/message", messageDTO);
+            
             return new ResponseEntity<>("Offer updated", HttpStatus.CREATED);
         }
-        return new ResponseEntity<>("Offer not updated", HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>("Invalid offer", HttpStatus.NOT_ACCEPTABLE);
     }
 
     @PutMapping("/leave/{auctionId}/{userId}")

@@ -9,6 +9,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SpringBootApplication
 public class AuctionApplication {
 
@@ -37,6 +40,11 @@ public class AuctionApplication {
 			participantRepository.save(participant1Auction1);
 			participantRepository.save(participant2Auction1);
 			participantRepository.save(participant3Auction1);
+			List<AuctionParticipant> participants = new ArrayList<>();
+			participants.add(participant1Auction1);
+			participants.add(participant2Auction1);
+			participants.add(participant3Auction1);
+			auction1.setParticipants(participants);
 			auction1.setOwner(ownerAuction1);
 			auction1.setMinimalOffer(500);
 			auction1.setCurrentOffer(650);

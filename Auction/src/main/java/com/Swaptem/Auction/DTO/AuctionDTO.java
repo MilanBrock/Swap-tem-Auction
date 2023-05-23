@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class AuctionDTO {
+    public int auctionId;
     public int ownerId;
     public int[] ownerItems;
     public int minimalOffer;
