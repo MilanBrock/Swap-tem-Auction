@@ -44,6 +44,10 @@ public class AuctionApplication {
 			participants.add(participant1Auction1);
 			participants.add(participant2Auction1);
 			participants.add(participant3Auction1);
+			List<AuctionItem> auctionItems = new ArrayList<>();
+			auctionItems.add(ownerItem1Auction1);
+			auctionItems.add(ownerItem2Auction1);
+			auction1.setOwnerItems(auctionItems);
 			auction1.setParticipants(participants);
 			auction1.setOwner(ownerAuction1);
 			auction1.setMinimalOffer(500);
