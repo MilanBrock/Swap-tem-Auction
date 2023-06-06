@@ -24,75 +24,89 @@ public class AuctionApplication {
 	CommandLineRunner run(AuctionRepositoryCustom auctionRepository, AuctionParticipantRepositoryCustom participantRepository, AuctionItemRepositoryCustom itemRepository) {
 		return args -> {
 
-			// Active auction, active offer
+			// Auction 1, active
 			Auction auction1 = new Auction();
+			auction1 = auctionRepository.save(auction1); // Assign auction ID
+
+			AuctionParticipant owner1 = new AuctionParticipant(1, true, auction1);
+			participantRepository.save(owner1);
+
+			List<AuctionItem> ownerItems1 = new ArrayList<>();
+
+			AuctionItem item1 = new AuctionItem(4,auction1);
+			itemRepository.save(item1);
+			ownerItems1.add(item1);
+
+
+			List<AuctionParticipant> participants1 = new ArrayList<>();
+			AuctionParticipant participant1 = new AuctionParticipant(5,auction1);
+			participants1.add(participant1);
+			participants1.add(owner1);
+
+			auction1.setOwner(owner1);
+			auction1.setOwnerItems(ownerItems1);
+			auction1.setMinimalOffer(300);
 			auction1.setActive(true);
-			auctionRepository.save(auction1);
-			AuctionParticipant ownerAuction1 = new AuctionParticipant(1, true, auction1);
-			participantRepository.save(ownerAuction1);
-			AuctionItem ownerItem1Auction1 = new AuctionItem(1, auction1);
-			AuctionItem ownerItem2Auction1 = new AuctionItem(5, auction1);
-			itemRepository.save(ownerItem1Auction1);
-			itemRepository.save(ownerItem2Auction1);
-			AuctionParticipant participant1Auction1 = new AuctionParticipant(5, false,auction1);
-			AuctionParticipant participant2Auction1 = new AuctionParticipant(30,false,auction1);
-			AuctionParticipant participant3Auction1 = new AuctionParticipant(72,false,auction1);
-			participantRepository.save(participant1Auction1);
-			participantRepository.save(participant2Auction1);
-			participantRepository.save(participant3Auction1);
-			List<AuctionParticipant> participants = new ArrayList<>();
-			participants.add(participant1Auction1);
-			participants.add(participant2Auction1);
-			participants.add(participant3Auction1);
-			List<AuctionItem> auctionItems = new ArrayList<>();
-			auctionItems.add(ownerItem1Auction1);
-			auctionItems.add(ownerItem2Auction1);
-			auction1.setOwnerItems(auctionItems);
-			auction1.setParticipants(participants);
-			auction1.setOwner(ownerAuction1);
-			auction1.setMinimalOffer(500);
-			auction1.setCurrentOffer(650);
-			auction1.setCurrentOfferParticipant(participant2Auction1);
+			auction1.setParticipants(participants1);
 			auctionRepository.save(auction1);
 
 
-			// Auction that is finished
+			// Auction 2, inactive
 			Auction auction2 = new Auction();
+			auction2 = auctionRepository.save(auction2); // Assign auction ID
+
+			AuctionParticipant owner2 = new AuctionParticipant(10, true, auction2);
+			participantRepository.save(owner2);
+
+			List<AuctionItem> ownerItems2 = new ArrayList<>();
+
+			AuctionItem item2 = new AuctionItem(5,auction2);
+			itemRepository.save(item2);
+			ownerItems2.add(item2);
+
+
+			List<AuctionParticipant> participants2 = new ArrayList<>();
+			AuctionParticipant participant2 = new AuctionParticipant(11, auction2);
+			participants2.add(owner2);
+			participants2.add(participant2);
+
+			auction2.setOwner(owner2);
+			auction2.setOwnerItems(ownerItems2);
+			auction2.setMinimalOffer(300);
 			auction2.setActive(false);
-			auctionRepository.save(auction2);
-			AuctionParticipant ownerAuction2 = new AuctionParticipant(63, true, auction2);
-			participantRepository.save(ownerAuction2);
-			AuctionItem ownerItem1Auction2 = new AuctionItem(10, auction2);
-			AuctionItem ownerItem2Auction2 = new AuctionItem(13, auction2);
-			AuctionItem ownerItem3Auction2 = new AuctionItem(5, auction2);
-			itemRepository.save(ownerItem1Auction2);
-			itemRepository.save(ownerItem2Auction2);
-			itemRepository.save(ownerItem3Auction2);
-			AuctionParticipant participant1Auction2 = new AuctionParticipant(1, false, auction2);
-			AuctionParticipant participant2Auction2 = new AuctionParticipant(55, false, auction2);
-			participantRepository.save(participant1Auction2);
-			participantRepository.save(participant2Auction2);
-			auction2.setOwner(ownerAuction2);
-			auction2.setMinimalOffer(200);
-			auction2.setCurrentOffer(250);
-			auction2.setCurrentOfferParticipant(participant1Auction2);
+			auction2.setParticipants(participants2);
+			auction2.setCurrentOffer(500);
+			auction2.setCurrentOfferParticipant(participant2);
 			auctionRepository.save(auction2);
 
 
-			// Active auction, no offer yet
+
+
+			// Auction 3, active
 			Auction auction3 = new Auction();
-			auction3.setActive(true);
-			auctionRepository.save(auction3);
-			AuctionParticipant ownerAuction3 = new AuctionParticipant(2, true, auction3);
-			participantRepository.save(ownerAuction3);
-			AuctionItem ownerItem1Auction3 = new AuctionItem(17, auction3);
-			itemRepository.save(ownerItem1Auction3);
-			AuctionParticipant participant1Auction3 = new AuctionParticipant(5, false,auction3);
-			participantRepository.save(participant1Auction3);
-			auction3.setOwner(ownerAuction3);
-			auction3.setMinimalOffer(1000);
-			auctionRepository.save(auction3);
+			auction3 = auctionRepository.save(auction3); // Assign auction ID
 
+			AuctionParticipant owner3 = new AuctionParticipant(4, true, auction3);
+			participantRepository.save(owner3);
+
+			List<AuctionItem> ownerItems3 = new ArrayList<>();
+
+			AuctionItem item3 = new AuctionItem(4,auction3);
+			itemRepository.save(item3);
+			ownerItems3.add(item3);
+
+
+			List<AuctionParticipant> participants3 = new ArrayList<>();
+			AuctionParticipant participant3 = new AuctionParticipant(2, auction3);
+			participants3.add(participant3);
+			participants3.add(owner3);
+
+			auction3.setOwner(owner3);
+			auction3.setOwnerItems(ownerItems3);
+			auction3.setMinimalOffer(300);
+			auction3.setActive(true);
+			auction3.setParticipants(participants3);
+			auctionRepository.save(auction3);
 		};
 	};
 }

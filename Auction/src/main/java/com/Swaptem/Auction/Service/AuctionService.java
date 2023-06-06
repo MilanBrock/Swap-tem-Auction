@@ -117,25 +117,31 @@ public class AuctionService {
         AuctionParticipant participant = participantRepository.findById(participantIdInput).orElse(null);
 
         if(auctionActive != null && participant!= null){
-            Auction emptyAuction = new Auction();
-            participant.setAuction(emptyAuction);
-            participantRepository.save(participant);
-            return true;
+            if (auctionActive.getCurrentOfferParticipant() != participant){
+                auctionActive.getParticipants().remove(participant);
+                auctionRepository.save(auctionActive);
+
+                Auction emptyAuction = new Auction();
+                participant.setAuction(emptyAuction);
+                participantRepository.delete(participant);
+                return true;
+            }
+
         }
         return false;
     }
 
-    public boolean UpdateOffer(int auctionIdInput, int participantIdInput, int currencyOfferInput){
+    public boolean UpdateOffer(AuctionOfferDTO auctionOffer){
         // Bestaat de veiling?
-        Auction auctionActive = auctionRepository.findAuctionByAuctionIdAndActive(auctionIdInput, true).orElse(null);
+        Auction auctionActive = auctionRepository.findAuctionByAuctionIdAndActive(auctionOffer.auctionId, true).orElse(null);
 
         // Is de gegeven gebruiker deel van de veiling?
-        AuctionParticipant participant = new AuctionParticipant(participantIdInput, auctionActive);
-        Auction auction = auctionRepository.findAuctionByAuctionIdAndParticipantsContains(auctionIdInput, participant).orElse(null);
+        AuctionParticipant participant = new AuctionParticipant(auctionOffer.participantId, auctionActive);
+        Auction auction = auctionRepository.findAuctionByAuctionIdAndParticipantsContains(auctionOffer.auctionId, participant).orElse(null);
 
         if(auction != null){
-            if(auction.getCurrentOffer() < currencyOfferInput){
-                auction.setCurrentOffer(currencyOfferInput);
+            if(auction.getCurrentOffer() < auctionOffer.offerAmount){
+                auction.setCurrentOffer(auctionOffer.offerAmount);
                 auction.setCurrentOfferParticipant(participant);
                 auctionRepository.save(auction);
                 return true;

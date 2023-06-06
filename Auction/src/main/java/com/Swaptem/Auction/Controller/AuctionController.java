@@ -5,6 +5,7 @@ import com.Swaptem.Auction.DTO.AuctionOfferDTO;
 import com.Swaptem.Auction.DTO.AuctionStartDTO;
 import com.Swaptem.Auction.DTO.MessageDTO;
 import com.Swaptem.Auction.Service.AuctionService;
+import com.Swaptem.Auction.Service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,17 +23,21 @@ public class AuctionController {
 
     private final AuctionService auctionService;
     private final SimpMessagingTemplate template;
+    final JwtService jwtService;
 
     @Autowired
-    public AuctionController(AuctionService auctionService, SimpMessagingTemplate template){
+    public AuctionController(AuctionService auctionService, SimpMessagingTemplate template, JwtService jwtService){
         this.auctionService = auctionService;
         this.template = template;
+        this.jwtService = jwtService;
     }
 
 
 
     @PostMapping()
-    public ResponseEntity<String> StartAuction(@RequestBody AuctionStartDTO auctionDTOInput){
+    public ResponseEntity<String> StartAuction(@RequestBody AuctionStartDTO auctionDTOInput, @RequestHeader String authentication){
+        int ownerId = jwtService.getUserIdFromJwtToken(authentication);
+        auctionDTOInput.setOwnerId(ownerId);
         boolean succes = auctionService.StartAuction(auctionDTOInput);
         if(succes){
             return new ResponseEntity<>("Auction added", HttpStatus.CREATED);
@@ -51,10 +56,16 @@ public class AuctionController {
 
 
     @GetMapping("/{auctionId}")
-    public ResponseEntity<AuctionDTO> GetActiveAuction(@PathVariable int auctionId){
+    public ResponseEntity<AuctionDTO> GetActiveAuction(@PathVariable int auctionId, @RequestHeader String authentication){
+        int userId = jwtService.getUserIdFromJwtToken(authentication);
+
         AuctionDTO auctionDTO = auctionService.GetAuction(auctionId, true);
         if(auctionDTO != null){
-            return ResponseEntity.ok(auctionDTO);
+            for(int participantId: auctionDTO.participants){
+                if(participantId == userId){
+                    return ResponseEntity.ok(auctionDTO);
+                }
+            }
         }
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
     }
@@ -68,8 +79,9 @@ public class AuctionController {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
     }
 
-    @PutMapping("/join/{auctionId}/{userId}")
-    public ResponseEntity<String> JoinAuction(@PathVariable int auctionId, @PathVariable int userId){
+    @PutMapping("/join/{auctionId}")
+    public ResponseEntity<String> JoinAuction(@PathVariable int auctionId, @RequestHeader String authentication){
+        int userId = jwtService.getUserIdFromJwtToken(authentication);
         if(auctionService.AddParticipant(auctionId,userId)){
             return new ResponseEntity<>("Auction joined", HttpStatus.CREATED);
         }
@@ -77,11 +89,14 @@ public class AuctionController {
     }
 
     @PostMapping("/offer")
-    public ResponseEntity<String> UpdateOffer(@RequestBody AuctionOfferDTO auctionOfferInput){
-        System.out.println("catch");
-        if(auctionService.UpdateOffer(auctionOfferInput.getAuctionId(),auctionOfferInput.participantId,auctionOfferInput.getOfferAmount())){
+    public ResponseEntity<String> UpdateOffer(@RequestBody AuctionOfferDTO auctionOfferInput, @RequestHeader String authentication){
+        int userId = jwtService.getUserIdFromJwtToken(authentication);
+        auctionOfferInput.setParticipantId(userId);
+
+        if(auctionService.UpdateOffer(auctionOfferInput)){
             AuctionOfferDTO auctionOfferDTO = auctionService.GetOffer(auctionOfferInput.getAuctionId());
             Integer message = (Integer)auctionOfferDTO.offerAmount;
+
             MessageDTO messageDTO = new MessageDTO();
             messageDTO.setMessage(message.toString());
             template.convertAndSend("/topic/message", messageDTO);
@@ -91,8 +106,10 @@ public class AuctionController {
         return new ResponseEntity<>("Invalid offer", HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @PutMapping("/leave/{auctionId}/{userId}")
-    public ResponseEntity<String> LeaveAuction(@PathVariable int auctionId, @PathVariable int userId){
+    @PutMapping("/leave/{auctionId}")
+    public ResponseEntity<String> LeaveAuction(@PathVariable int auctionId, @RequestHeader String authentication){
+        int userId = jwtService.getUserIdFromJwtToken(authentication);
+
         if(auctionService.RemoveParticipant(auctionId,userId)){
             return new ResponseEntity<>("Left auction", HttpStatus.CREATED);
         }
@@ -100,8 +117,10 @@ public class AuctionController {
     }
 
 
-    @PutMapping("/stop/{auctionId}/{userId}")
-    public ResponseEntity<String> StopAuction(@PathVariable int auctionId, @PathVariable int userId){
+    @PutMapping("/stop/{auctionId}")
+    public ResponseEntity<String> StopAuction(@PathVariable int auctionId, @RequestHeader String authentication){
+        int userId = jwtService.getUserIdFromJwtToken(authentication);
+
         if(auctionService.StopAuction(auctionId,userId)){
             return new ResponseEntity<>("Stopped auction", HttpStatus.CREATED);
         }

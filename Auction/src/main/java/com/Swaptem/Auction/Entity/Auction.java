@@ -18,15 +18,15 @@ public class Auction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int auctionId;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private AuctionParticipant owner;
-    @OneToMany
+    @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL)
     private List<AuctionItem> ownerItems;
     private int minimalOffer;
-    @OneToMany
+    @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL)
     private List<AuctionParticipant> participants;
     private int currentOffer;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private AuctionParticipant currentOfferParticipant;
     private boolean active;
 
