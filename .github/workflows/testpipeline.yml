@@ -26,5 +26,5 @@ jobs:
       - name: Wait 15 seconds for the application to start
         run: sleep 15
       - name: Run Postman REST API tests
-        run: newman run src/test/Swap-tem auction.postman_collection.json
+        run: newman run src/test/Swaptemauctionpostman_collection.json
       
