@@ -1,0 +1,29 @@
+name: Test pipeline
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          
+      - name: Install Newman to run REST API test
+        run: npm install -g newman
+        
+      - name: Create the JAR file with Maven
+        run: mvn package -DskipTests    
+      
+        
+      - name: Start the Springboot application
+        run: nohup mvn spring-boot:run > /dev/null 2>&1 &
+      - name: Wait 15 seconds for the application to start
+        run: sleep 15
+      - name: Run Postman REST API tests
+        run: newman run src/test/Swap-tem auction.postman_collection.json
+      
