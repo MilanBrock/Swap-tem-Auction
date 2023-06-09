@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "4d9c3823-05d4-47fb-9865-cf57adadfd7c",
 		"name": "Swap-tem auction",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "24581680"
 	},
 	"item": [
@@ -39,17 +39,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:9090/auctions",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9090",
-					"path": [
-						"auctions"
-					]
-				}
+				"url": "http://localhost:9090/auctions"
 			},
 			"response": []
 		},
@@ -71,17 +61,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost:9090/auctions",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9090",
-					"path": [
-						"auctions"
-					]
-				}
+				"url": "http://localhost:9090/auctions"
 			},
 			"response": []
 		},
@@ -109,18 +89,7 @@
 						"type": "text"
 					}
 				],
-				"url": {
-					"raw": "http://localhost:9090/auctions/3",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9090",
-					"path": [
-						"auctions",
-						"3"
-					]
-				}
+				"url": "http://localhost:9090/auctions/3"
 			},
 			"response": []
 		},
@@ -142,19 +111,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost:9090/auctions/inactive/2",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9090",
-					"path": [
-						"auctions",
-						"inactive",
-						"2"
-					]
-				}
+				"url": "http://localhost:9090/auctions/inactive/2"
 			},
 			"response": []
 		},
@@ -182,19 +139,7 @@
 						"type": "text"
 					}
 				],
-				"url": {
-					"raw": "http://localhost:9090/auctions/join/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9090",
-					"path": [
-						"auctions",
-						"join",
-						"1"
-					]
-				}
+				"url": "http://localhost:9090/auctions/join/1"
 			},
 			"response": []
 		},
@@ -231,18 +176,7 @@
 						}
 					}
 				},
-				"url": {
-					"raw": "http://localhost:9090/auctions/offer",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9090",
-					"path": [
-						"auctions",
-						"offer"
-					]
-				}
+				"url": "http://localhost:9090/auctions/offer"
 			},
 			"response": []
 		},
@@ -270,19 +204,7 @@
 						"type": "text"
 					}
 				],
-				"url": {
-					"raw": "http://localhost:9090/auctions/leave/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9090",
-					"path": [
-						"auctions",
-						"leave",
-						"1"
-					]
-				}
+				"url": "http://localhost:9090/auctions/leave/1"
 			},
 			"response": []
 		},
@@ -310,19 +232,7 @@
 						"type": "text"
 					}
 				],
-				"url": {
-					"raw": "http://localhost:9090/auctions/stop/1",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "9090",
-					"path": [
-						"auctions",
-						"stop",
-						"1"
-					]
-				}
+				"url": "http://localhost:9090/auctions/stop/1"
 			},
 			"response": []
 		}
