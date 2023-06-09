@@ -31,32 +31,49 @@ public class AuctionService {
     public boolean StartAuction(AuctionStartDTO auctionInput){
         boolean succes = false;
 
-        Auction auction = new Auction();
-        auction = auctionRepository.save(auction); // Assign auction ID
-
-        AuctionParticipant owner = new AuctionParticipant(auctionInput.ownerId, true, auction);
-        participantRepository.save(owner);
-
-        List<AuctionItem> ownerItems = new ArrayList<>();
-        for(int i = 0; i < auctionInput.ownerItems.length; i++){
-            AuctionItem item = new AuctionItem(auctionInput.getOwnerItems()[i],auction);
-            itemRepository.save(item);
-            ownerItems.add(item);
+        // Is de eigenaar al deel van een actieve veiling?
+        boolean ownerCheck = false;
+        AuctionParticipant foundParticipant = participantRepository.findById(auctionInput.ownerId).orElse(null);
+        if(foundParticipant != null){
+            Auction foundAuctionOwner = auctionRepository.findAuctionByAuctionIdAndActive(foundParticipant.getAuction().getAuctionId(), true).orElse(null);
+            if(foundAuctionOwner == null){
+                ownerCheck = true;
+            }
+        } else{
+            ownerCheck = true;
         }
 
-        List<AuctionParticipant> participants = new ArrayList<>();
-        participants.add(owner);
 
-        auction.setOwner(owner);
-        auction.setOwnerItems(ownerItems);
-        auction.setMinimalOffer(auctionInput.minimalOffer);
-        auction.setActive(true);
-        auction.setParticipants(participants);
-        Auction auctionResult = auctionRepository.save(auction);
 
-        if(auctionResult != null){
-            succes = true;
+        if (ownerCheck){
+            Auction auction = new Auction();
+            auction = auctionRepository.save(auction); // Assign auction ID
+
+            AuctionParticipant owner = new AuctionParticipant(auctionInput.ownerId, true, auction);
+            participantRepository.save(owner);
+
+            List<AuctionItem> ownerItems = new ArrayList<>();
+            for(int i = 0; i < auctionInput.ownerItems.length; i++){
+                AuctionItem item = new AuctionItem(auctionInput.getOwnerItems()[i],auction);
+                itemRepository.save(item);
+                ownerItems.add(item);
+            }
+
+            List<AuctionParticipant> participants = new ArrayList<>();
+            participants.add(owner);
+
+            auction.setOwner(owner);
+            auction.setOwnerItems(ownerItems);
+            auction.setMinimalOffer(auctionInput.minimalOffer);
+            auction.setActive(true);
+            auction.setParticipants(participants);
+            Auction auctionResult = auctionRepository.save(auction);
+
+            if(auctionResult != null){
+                succes = true;
+            }
         }
+
         return succes;
     }
 
@@ -140,7 +157,14 @@ public class AuctionService {
         Auction auction = auctionRepository.findAuctionByAuctionIdAndParticipantsContains(auctionOffer.auctionId, participant).orElse(null);
 
         if(auction != null){
-            if(auction.getCurrentOffer() < auctionOffer.offerAmount){
+            if(auction.getCurrentOffer() == 0){
+                if(auction.getMinimalOffer() <= auctionOffer.offerAmount){
+                    auction.setCurrentOffer(auctionOffer.offerAmount);
+                    auction.setCurrentOfferParticipant(participant);
+                    auctionRepository.save(auction);
+                    return true;
+                }
+            } else if (auction.getCurrentOffer() < auctionOffer.offerAmount) {
                 auction.setCurrentOffer(auctionOffer.offerAmount);
                 auction.setCurrentOfferParticipant(participant);
                 auctionRepository.save(auction);

@@ -26,6 +26,9 @@ public class JwtService {
         } else if(token.equals("RestAPIUserId5")) {
             userId = 5;
             return userId;
+        }else if(token.equals("RestAPIUserId6")) {
+            userId = 6;
+            return userId;
         }
 
 
